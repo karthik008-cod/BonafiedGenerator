@@ -1,0 +1,730 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+      }
+
+      .app {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .card {
+        background: white;
+        border: 0.5px solid var(--color-border-tertiary, #ddd);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      h2 {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--color-text-primary, #111);
+        margin-bottom: 14px;
+      }
+
+      .field-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        margin-bottom: 4px;
+      }
+
+      label {
+        font-size: 13px;
+        color: var(--color-text-secondary, #555);
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 0.5px solid var(--color-border-secondary, #ccc);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--color-text-primary, #111);
+        background: var(--color-background-primary, #fff);
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #555;
+      }
+
+      button {
+        padding: 8px 18px;
+        border: 0.5px solid var(--color-border-secondary, #aaa);
+        border-radius: 8px;
+        background: transparent;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--color-text-primary, #111);
+        white-space: nowrap;
+      }
+      button:hover {
+        background: var(--color-background-secondary, #f0f0f0);
+      }
+      button:active {
+        transform: scale(0.98);
+      }
+      button.primary {
+        background: #1a1a2e;
+        color: #fff;
+        border-color: #1a1a2e;
+      }
+      button.primary:hover {
+        background: #16213e;
+      }
+
+      .status {
+        font-size: 13px;
+        margin-top: 8px;
+        min-height: 18px;
+      }
+      .status.error {
+        color: #c0392b;
+      }
+      .status.success {
+        color: #27ae60;
+      }
+      .status.loading {
+        color: #2980b9;
+      }
+
+      .cert-preview {
+        display: none;
+        margin-top: 16px;
+      }
+      .cert-preview.visible {
+        display: block;
+      }
+
+      /* A5 certificate layout for screen preview */
+      .cert-paper {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        border: 2px dashed #b0b0b0;
+        padding: 12px;
+        background: white;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 13px;
+      }
+
+      .cert-inner {
+        border: 2px solid #555;
+        padding: 14px 20px 16px 20px;
+        min-height: 340px;
+      }
+
+      .cert-header {
+        text-align: center;
+        border-bottom: 1.5px solid #333;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
+      }
+
+      .cert-header .school-name {
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-family: 'Times New Roman', Times, serif;
+      }
+
+      .cert-header .school-addr {
+        font-size: 12px;
+        margin-top: 2px;
+        font-family: Arial, sans-serif;
+      }
+
+      .cert-title {
+        font-size: 13.5px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: underline;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 6px 0 4px 0;
+      }
+
+      .cert-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-bottom: 8px;
+        border-top: 1px solid #ccc;
+        padding-top: 5px;
+      }
+
+      /* ── Certificate body: paragraph layout ── */
+      .cert-body {
+        font-size: 13px;
+        line-height: 1.65;
+        font-family: Arial, sans-serif;
+        color: #333;
+      }
+
+      /* Each paragraph is indented from the left */
+      .cert-body .cert-para {
+        margin: 0 0 8px 0;
+        text-indent: 2em;
+        text-align: left;
+      }
+
+      .class-val {
+        font-weight: bold;
+        font-size: 13.5px;
+        border-bottom: 1px dotted #555;
+        padding: 0 2px;
+        font-family: 'Times New Roman', Times, serif;
+        display: inline;
+      }
+
+      /* Inline bold underlined value fields */
+      .cert-body .val {
+        font-weight: bold;
+        font-size: 13.5px;
+        text-transform: uppercase;
+        border-bottom: 1px dotted #555;
+        padding: 0 2px;
+        font-family: 'Times New Roman', Times, serif;
+        display: inline;
+      }
+
+      /* Salutation (Mr./Ms.) — same style as value */
+      .cert-body .sal {
+        font-weight: bold;
+        font-size: 13.5px;
+        text-transform: uppercase;
+        border-bottom: 1px dotted #555;
+        padding: 0 2px;
+        font-family: 'Times New Roman', Times, serif;
+        display: inline;
+      }
+
+      /* Small dotted underline placeholders for blank class/year fields */
+      .cert-body .blank {
+        display: inline;
+        border-bottom: 1px dotted #555;
+        padding: 0 1px;
+      }
+
+      .cert-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        font-size: 12px;
+      }
+
+      .cert-footer .sig-block {
+        text-align: center;
+      }
+      .cert-footer .sig-label {
+        font-weight: bold;
+        margin-top: 28px;
+      }
+      .cert-footer .sig-sub {
+        font-size: 10.5px;
+        color: #333;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        justify-content: center;
+      }
+
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #print-area,
+        #print-area * {
+          visibility: visible;
+        }
+        #print-area {
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: 148mm;
+          height: 105mm;
+          padding: 0;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Auth guard: runs before page renders -->
+    <script>
+      (function () {
+        try {
+          if (!sessionStorage.getItem('__zphs_auth')) {
+            document.documentElement.style.display = 'none';
+            window.location.replace('/');
+          }
+        } catch (e) {
+          window.location.replace('/');
+        }
+      })();
+    </script>
+    <div class="app">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <h2 style="margin-bottom:0;">Bonafide Certificate Generator — ZPHS Kistapur</h2>
+          <button onclick="logout()" style="font-size:12px;padding:5px 12px;color:#c0392b;border-color:#c0392b;" title="Sign out">⏻ Logout</button>
+        </div>
+
+        <label>Admission Number</label>
+        <div class="field-row">
+          <div style="flex: 1">
+            <input
+              type="text"
+              id="admInput"
+              placeholder="e.g. 4831"
+              onkeydown="if (event.key === 'Enter') fetchStudent();"
+            />
+          </div>
+          <button onclick="fetchStudent()">Fetch Student ↗</button>
+        </div>
+        <div class="status" id="statusMsg"></div>
+      </div>
+
+      <div class="cert-preview" id="certPreview">
+        <div class="card" style="padding: 10px 16px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            "
+          >
+            <h2 style="margin-bottom: 0">Certificate Preview</h2>
+            <div style="display: flex; gap: 8px">
+              <button onclick="printCert()">🖨 Print / Save PDF</button>
+            </div>
+          </div>
+
+          <div id="print-area">
+            <div class="cert-paper">
+              <div class="cert-inner">
+                <div class="cert-header">
+                  <div
+                    class="cert-header"
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 16px;
+                      border-bottom: none;
+                      padding-bottom: 0;
+                      margin-bottom: 0;
+                    "
+                  >
+                    <div>
+                      <div class="school-name">
+                        Zilla Parishad Secondary School, Kistapur
+                      </div>
+                      <div class="school-addr">
+                        Mndl. Jannaram, Dist. Mancherial (T.S) – 504205
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      border-top: 1.5px solid #333;
+                      margin-top: 8px;
+                      padding-top: 6px;
+                    "
+                  >
+                    <div class="cert-title">
+                      Bonafide, Conduct &amp; Date of Birth Certificate
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cert-meta">
+                  <span
+                    ><strong>Adm No.:</strong>
+                    <span id="c-admno"></span>
+                    <strong>&amp; Date:</strong> <span id="c-admdate"></span
+                  ></span>
+                  <span
+                    ><strong>Date:</strong> <span id="c-certdate"></span
+                  ></span>
+                </div>
+
+                <div class="cert-body">
+                  <p class="cert-para">This is to certify that <span class="sal" id="c-salutation"></span> <span class="val" id="c-name"></span><span id="c-o"> S/o</span> <span class="val" id="c-father"></span> &amp; <span class="val" id="c-mother"></span> is a Bona Fide student of this Institution <span class="val">Z P Secondary School, Kistapur, Mndl. Jannaram</span> studying / studied in Class from <span class="class-val blank" id="c-fromclass"></span> to Class <span class="class-val blank" id="c-toclass"></span> during the years <span class="val blank" id="c-fromyear"></span> to <span class="val blank" id="c-toyear"></span>.</p>
+                  <p class="cert-para"><span id="c-pronoun-dob">His / Her</span> Date of Birth is <span class="val" id="c-dob"></span> (In words &ndash; <span class="val" id="c-dobwords"></span>).</p>
+                  <p class="cert-para">And <span id="c-pronoun-conduct">his / her</span> character is found <span class="val" id="c-conduct"></span>.</p>
+                </div>
+
+                <div class="cert-footer">
+                  <div class="sig-block">
+                    <div style="height: 30px"></div>
+                    <div class="sig-label">In-Charge</div>
+                  </div>
+                  <div class="sig-block">
+                    <div style="height: 30px"></div>
+                    <div class="sig-label">Headmaster</div>
+                    <div class="sig-sub">ZPSS Kistapur</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SHEET_ID = "1saM9Tj4N4VrlRR0gtrYOiM4F5iqHvFVRmKik1bbi_DM";
+      const SHEET_NAME = "DATA";
+
+      function logout() {
+        sessionStorage.removeItem('__zphs_auth');
+        window.location.replace('/');
+      }
+
+      function setStatus(msg, type) {
+        const el = document.getElementById("statusMsg");
+        el.textContent = msg;
+        el.className = "status " + (type || "");
+      }
+
+      async function fetchStudent() {
+        const admRaw = document.getElementById("admInput").value.trim();
+        if (!admRaw) {
+          setStatus("Please enter an admission number.", "error");
+          return;
+        }
+
+        setStatus("Fetching student data...", "loading");
+        document.getElementById("certPreview").classList.remove("visible");
+
+        try {
+          //const url = 'https://docs.google.com/spreadsheets/d/1saM9Tj4N4VrlRR0gtrYOiM4F5iqHvFVRmKik1bbi_DM/edit?gid=920091782#gid=920091782';
+          const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+          const res = await fetch(url);
+          if (!res.ok)
+            throw new Error(
+              "Could not load spreadsheet. Check sharing settings (Anyone with link - Viewer).",
+            );
+          const text = await res.text();
+          const rows = parseCSV(text);
+
+          if (rows.length < 2) throw new Error("No data rows found in sheet.");
+
+          const headers = rows[0].map((h) => h.trim().toLowerCase());
+          const admCol = headers.findIndex(
+            (h) =>
+              h === "Admn No." ||
+              h === "admn no." ||
+              h === "adm_no" ||
+              h === "admission no" ||
+              h === "admno" ||
+              h === "adm number" ||
+              h === "admission number" ||
+              h.startsWith("adm"),
+          );
+
+          if (admCol === -1)
+            throw new Error(
+              "Column A not found. Headers: " + rows[0].join(", "),
+            );
+
+          const admNum = admRaw.trim();
+          const studentRow = rows
+            .slice(1)
+            .find((r) => r[admCol] && r[admCol].trim() === admNum);
+
+          if (!studentRow) {
+            setStatus(`No student found with Adm No. ${admNum}.`, "error");
+            return;
+          }
+
+          populateCertificate(studentRow, rows[0]);
+          setStatus(
+            `Student found: ${studentRow[getColIdx(headers, ["name", "student name", "pupil name"])] || ""}`,
+            "success",
+          );
+          document.getElementById("certPreview").classList.add("visible");
+        } catch (e) {
+          setStatus("Error: " + e.message, "error");
+        }
+      }
+
+      function getColIdx(headers, keys) {
+        for (const k of keys) {
+          const i = headers.findIndex((h) => h.includes(k));
+          if (i !== -1) return i;
+        }
+        return -1;
+      }
+
+      function formatClassSuperscript(cls) {
+        if (!cls) return "";
+        return cls.replace(/(\d+)(st|nd|rd|th)/gi, (m, num, suffix) => {
+          return `${num}<sup>${suffix.toLowerCase()}</sup>`;
+        });
+      }
+
+      function populateCertificate(row, headerRow) {
+        const h = headerRow.map((x) => x.trim().toLowerCase());
+        const g = (keys) => {
+          const i = getColIdx(h, keys);
+          return i !== -1 ? (row[i] || "").trim() : "";
+        };
+
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, "0");
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const yyyy = today.getFullYear();
+
+        document.getElementById("c-admno").textContent =
+          g(["adm no", "admission no", "adm number", "admno", "adm"]) || row[0];
+        document.getElementById("c-admdate").textContent = g([
+          "admn date",
+          "admission date",
+          "date of adm",
+          "joining date",
+          "join date",
+        ]);
+        document.getElementById("c-certdate").textContent =
+          `${dd}-${mm}-${yyyy}`;
+
+        const gender = g(["gender", "sex"]).toLowerCase();
+        const isFemale = gender === "female" || gender === "f" || gender === "girl" || gender.includes("kumari") || gender.includes("girl") || gender.startsWith("f");
+        const salutation = isFemale ? "Ms." : "Mr.";
+        document.getElementById("c-salutation").textContent = salutation;
+
+        const co = isFemale ? "D/o" : "S/o";
+        document.getElementById("c-o").textContent = " " + co;
+
+        document.getElementById("c-pronoun-dob").textContent = isFemale ? "Her" : "His";
+        document.getElementById("c-pronoun-conduct").textContent = isFemale ? "her" : "his";
+
+        document.getElementById("c-name").textContent = g([
+          "SURNAME STUDENT NAME",
+          "surname student name",
+          "student name",
+          "pupil name",
+          "full name",
+        ]);
+        document.getElementById("c-father").textContent = g([
+          "father",
+          "father name",
+          "fathers name",
+          "f name",
+        ]);
+        document.getElementById("c-mother").textContent = g([
+          "mother",
+          "mother name",
+          "mothers name",
+          "m name",
+        ]);
+
+        document.getElementById("c-fromclass").innerHTML = formatClassSuperscript(g([
+          "joined in class",
+        ]));
+        document.getElementById("c-toclass").innerHTML = formatClassSuperscript(g([
+          "class leaving",
+        ]));
+        document.getElementById("c-fromyear").textContent = g([
+          "academic year",
+          "from year",
+          "year of joining",
+          "joining year",
+          "year from",
+          "ac year from",
+          "academic year",
+        ]);
+        document.getElementById("c-toyear").textContent = g([
+          "leaving academic year",
+          "to year",
+          "year to",
+          "current year",
+          "present year",
+          "ac year to",
+        ]);
+
+        const dobRaw = g(["dob", "date of birth", "birth date", "birth"]);
+        document.getElementById("c-dob").textContent = dobRaw;
+        document.getElementById("c-dobwords").textContent = dobToWords(dobRaw);
+
+        const conduct =
+          g(["conduct", "character", "behaviour", "behavior"]) ||
+          "SATISFACTORY";
+        document.getElementById("c-conduct").textContent =
+          conduct.toUpperCase();
+      }
+
+      function dobToWords(dob) {
+        if (!dob) return "";
+        let d, m, y;
+        const parts = dob.split(/[\/\-\.]/);
+        if (parts.length === 3) {
+          if (parseInt(parts[2]) > 31) {
+            d = parseInt(parts[0]);
+            m = parseInt(parts[1]);
+            y = parseInt(parts[2]);
+          } else {
+            m = parseInt(parts[0]);
+            d = parseInt(parts[1]);
+            y = parseInt(parts[2]);
+          }
+        } else return dob;
+
+        const months = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        const ones = [
+          "",
+          "One",
+          "Two",
+          "Three",
+          "Four",
+          "Five",
+          "Six",
+          "Seven",
+          "Eight",
+          "Nine",
+          "Ten",
+          "Eleven",
+          "Twelve",
+          "Thirteen",
+          "Fourteen",
+          "Fifteen",
+          "Sixteen",
+          "Seventeen",
+          "Eighteen",
+          "Nineteen",
+        ];
+        const tens = [
+          "",
+          "",
+          "Twenty",
+          "Thirty",
+          "Forty",
+          "Fifty",
+          "Sixty",
+          "Seventy",
+          "Eighty",
+          "Ninety",
+        ];
+        const ordinals = {
+          1: "First",
+          2: "Second",
+          3: "Third",
+          4: "Fourth",
+          5: "Fifth",
+          6: "Sixth",
+          7: "Seventh",
+          8: "Eighth",
+          9: "Ninth",
+          10: "Tenth",
+          11: "Eleventh",
+          12: "Twelfth",
+          13: "Thirteenth",
+          14: "Fourteenth",
+          15: "Fifteenth",
+          16: "Sixteenth",
+          17: "Seventeenth",
+          18: "Eighteenth",
+          19: "Nineteenth",
+          20: "Twentieth",
+          21: "Twenty First",
+          22: "Twenty Second",
+          23: "Twenty Third",
+          24: "Twenty Fourth",
+          25: "Twenty Fifth",
+          26: "Twenty Sixth",
+          27: "Twenty Seventh",
+          28: "Twenty Eighth",
+          29: "Twenty Ninth",
+          30: "Thirtieth",
+          31: "Thirty First",
+        };
+
+        function numToWords(n) {
+          if (n < 20) return ones[n];
+          if (n < 100)
+            return (
+              tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "")
+            );
+          if (n < 1000)
+            return (
+              ones[Math.floor(n / 100)] +
+              " Hundred" +
+              (n % 100 ? " " + numToWords(n % 100) : "")
+            );
+          const t = Math.floor(n / 1000);
+          const r = n % 1000;
+          return numToWords(t) + " Thousand" + (r ? " " + numToWords(r) : "");
+        }
+
+        const dayWord = ordinals[d] || numToWords(d);
+        const monthWord = months[m - 1] || "";
+        const yearWord = numToWords(y);
+        return `${dayWord} ${monthWord}, ${yearWord}`;
+      }
+
+      function parseCSV(text) {
+        const rows = [];
+        const lines = text.split("\n");
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const cells = [];
+          let cur = "",
+            inQ = false;
+          for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (ch === '"') {
+              inQ = !inQ;
+            } else if (ch === "," && !inQ) {
+              cells.push(cur);
+              cur = "";
+            } else {
+              cur += ch;
+            }
+          }
+          cells.push(cur);
+          rows.push(cells);
+        }
+        return rows;
+      }
+
+      function printCert() {
+        window.print();
+      }
+    </script>
+  </body>
+</html>
