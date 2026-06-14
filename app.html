@@ -395,9 +395,6 @@
     </div>
 
     <script>
-      const SHEET_ID = "1saM9Tj4N4VrlRR0gtrYOiM4F5iqHvFVRmKik1bbi_DM";
-      const SHEET_NAME = "DATA";
-
       function logout() {
         sessionStorage.removeItem('__zphs_auth');
         window.location.replace('/');
@@ -416,54 +413,38 @@
           return;
         }
 
+        const token = sessionStorage.getItem('__zphs_auth');
+        if (!token) {
+          setStatus("Session expired. Please log in again.", "error");
+          window.location.replace('/');
+          return;
+        }
+
         setStatus("Fetching student data...", "loading");
         document.getElementById("certPreview").classList.remove("visible");
 
         try {
-          //const url = 'https://docs.google.com/spreadsheets/d/1saM9Tj4N4VrlRR0gtrYOiM4F5iqHvFVRmKik1bbi_DM/edit?gid=920091782#gid=920091782';
-          const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
-          const res = await fetch(url);
-          if (!res.ok)
-            throw new Error(
-              "Could not load spreadsheet. Check sharing settings (Anyone with link - Viewer).",
-            );
-          const text = await res.text();
-          const rows = parseCSV(text);
+          const res = await fetch(`/api/student?adm=${encodeURIComponent(admRaw)}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': token
+            }
+          });
 
-          if (rows.length < 2) throw new Error("No data rows found in sheet.");
-
-          const headers = rows[0].map((h) => h.trim().toLowerCase());
-          const admCol = headers.findIndex(
-            (h) =>
-              h === "Admn No." ||
-              h === "admn no." ||
-              h === "adm_no" ||
-              h === "admission no" ||
-              h === "admno" ||
-              h === "adm number" ||
-              h === "admission number" ||
-              h.startsWith("adm"),
-          );
-
-          if (admCol === -1)
-            throw new Error(
-              "Column A not found. Headers: " + rows[0].join(", "),
-            );
-
-          const admNum = admRaw.trim();
-          const studentRow = rows
-            .slice(1)
-            .find((r) => r[admCol] && r[admCol].trim() === admNum);
-
-          if (!studentRow) {
-            setStatus(`No student found with Adm No. ${admNum}.`, "error");
-            return;
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || 'Failed to fetch student details.');
           }
 
-          populateCertificate(studentRow, rows[0]);
+          const { studentRow, headers } = data;
+          populateCertificate(studentRow, headers);
+          
+          const nameIdx = getColIdx(headers, ["name", "student name", "pupil name"]);
+          const studentName = nameIdx !== -1 ? (studentRow[nameIdx] || "") : "";
+          
           setStatus(
-            `Student found: ${studentRow[getColIdx(headers, ["name", "student name", "pupil name"])] || ""}`,
-            "success",
+            `Student found: ${studentName}`,
+            "success"
           );
           document.getElementById("certPreview").classList.add("visible");
         } catch (e) {
