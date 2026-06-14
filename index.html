@@ -3,433 +3,161 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZPHS Kistapur — Secure Login</title>
-    <meta name="description" content="Secure login portal for ZPHS Kistapur Bonafide Certificate Generator." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <title>ZPHS Kistapur — Login</title>
+    <meta name="description" content="Staff login for ZPHS Kistapur Bonafide Certificate Generator." />
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      :root {
-        --bg-deep:    #0b0f1a;
-        --bg-mid:     #111827;
-        --bg-card:    rgba(255,255,255,0.04);
-        --border:     rgba(255,255,255,0.10);
-        --accent:     #4f7ef8;
-        --accent-h:   #6b94ff;
-        --danger:     #f87171;
-        --text-hi:    #f1f5f9;
-        --text-lo:    #94a3b8;
-        --green:      #34d399;
-      }
-
-      html, body {
-        height: 100%;
-        font-family: 'Inter', sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-hi);
-        overflow: hidden;
-      }
-
-      /* ── Animated background ── */
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79,126,248,0.18) 0%, transparent 60%),
-          radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168,85,247,0.14) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 40% at 60% 40%, rgba(16,185,129,0.08) 0%, transparent 50%);
-        pointer-events: none;
-        z-index: 0;
-        animation: bgShift 12s ease-in-out infinite alternate;
-      }
-
-      @keyframes bgShift {
-        from { opacity: 1; }
-        to   { opacity: 0.7; }
-      }
-
-      /* ── Grid overlay ── */
-      body::after {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-        background-size: 40px 40px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      /* ── Layout ── */
-      .page {
-        position: relative;
-        z-index: 1;
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 24px 16px;
-        gap: 32px;
+        padding: 20px;
       }
 
-      /* ── Logo / Header ── */
-      .brand {
-        text-align: center;
-        animation: fadeDown 0.6s ease both;
-      }
-
-      .brand-icon {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(135deg, var(--accent) 0%, #a855f7 100%);
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px;
-        box-shadow: 0 0 40px rgba(79,126,248,0.35);
-        font-size: 28px;
-        animation: pulse 3s ease-in-out infinite;
-      }
-
-      @keyframes pulse {
-        0%, 100% { box-shadow: 0 0 30px rgba(79,126,248,0.30); }
-        50%       { box-shadow: 0 0 55px rgba(79,126,248,0.55); }
-      }
-
-      .brand h1 {
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.3px;
-        color: var(--text-hi);
-        line-height: 1.2;
-      }
-
-      .brand p {
-        font-size: 13px;
-        color: var(--text-lo);
-        margin-top: 5px;
-        font-weight: 400;
-      }
-
-      /* ── Card ── */
-      .card {
+      .login-box {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 32px 36px;
         width: 100%;
-        max-width: 420px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 36px 32px;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.05) inset,
-          0 24px 80px rgba(0,0,0,0.5);
-        animation: fadeUp 0.65s ease both 0.1s;
+        max-width: 380px;
       }
 
-      .card-title {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--text-hi);
-        margin-bottom: 6px;
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #e5e5e5;
+        padding-bottom: 20px;
       }
 
-      .card-sub {
-        font-size: 12.5px;
-        color: var(--text-lo);
-        margin-bottom: 28px;
+      .header h1 {
+        font-size: 17px;
+        font-weight: bold;
+        color: #1a1a1a;
+        margin-bottom: 3px;
       }
 
-      /* ── Form ── */
+      .header p {
+        font-size: 12px;
+        color: #666;
+      }
+
       .field {
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
 
       .field label {
         display: block;
-        font-size: 12px;
+        font-size: 13px;
+        color: #333;
+        margin-bottom: 5px;
         font-weight: 500;
-        color: var(--text-lo);
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        margin-bottom: 8px;
       }
 
-      .input-wrap {
-        position: relative;
-      }
-
-      .input-wrap .icon {
-        position: absolute;
-        left: 13px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 15px;
-        pointer-events: none;
-        opacity: 0.5;
-      }
-
-      .input-wrap input {
+      .field input {
         width: 100%;
-        padding: 12px 14px 12px 40px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: var(--text-hi);
+        padding: 9px 11px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
         font-size: 14px;
-        font-family: 'Inter', sans-serif;
-        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        color: #111;
+        background: #fff;
         outline: none;
+        transition: border-color 0.15s;
       }
 
-      .input-wrap input::placeholder { color: #475569; }
-
-      .input-wrap input:focus {
-        border-color: var(--accent);
-        background: rgba(79,126,248,0.08);
-        box-shadow: 0 0 0 3px rgba(79,126,248,0.15);
+      .field input:focus {
+        border-color: #1a56db;
       }
 
-      /* eye toggle */
-      .eye-btn {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 15px;
-        color: var(--text-lo);
-        padding: 4px;
-        transition: color 0.2s;
-        line-height: 1;
-      }
-      .eye-btn:hover { color: var(--text-hi); }
-
-      /* ── Submit button ── */
       .btn-login {
         width: 100%;
-        padding: 13px;
-        background: linear-gradient(135deg, var(--accent), #7c3aed);
+        padding: 10px;
+        background: #1a56db;
         border: none;
-        border-radius: 10px;
+        border-radius: 5px;
         color: #fff;
         font-size: 14px;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
         cursor: pointer;
-        letter-spacing: 0.3px;
-        transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-        margin-top: 6px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(79,126,248,0.30);
+        margin-top: 4px;
+        transition: background 0.15s;
       }
 
-      .btn-login::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
+      .btn-login:hover { background: #1447b2; }
+      .btn-login:active { background: #0f3b96; }
+      .btn-login:disabled { background: #93b4f0; cursor: not-allowed; }
 
-      .btn-login:hover { opacity: 0.92; box-shadow: 0 6px 28px rgba(79,126,248,0.45); }
-      .btn-login:hover::before { opacity: 1; }
-      .btn-login:active { transform: scale(0.98); }
-      .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
-
-      /* ── Spinner inside button ── */
-      .btn-login .spinner {
+      .error-msg {
         display: none;
-        width: 16px;
-        height: 16px;
-        border: 2px solid rgba(255,255,255,0.3);
-        border-top-color: #fff;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-        margin: 0 auto;
+        background: #fff5f5;
+        border: 1px solid #feb2b2;
+        color: #c53030;
+        font-size: 12.5px;
+        padding: 9px 11px;
+        border-radius: 5px;
+        margin-bottom: 14px;
       }
 
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .loading .btn-text { display: none; }
-      .loading .spinner  { display: block; }
+      .error-msg.show { display: block; }
 
-      /* ── Error / Success alert ── */
-      .alert {
-        display: none;
-        padding: 11px 14px;
-        border-radius: 9px;
-        font-size: 13px;
-        font-weight: 500;
-        margin-bottom: 18px;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .alert.show { display: flex; }
-
-      .alert.error {
-        background: rgba(248,113,113,0.12);
-        border: 1px solid rgba(248,113,113,0.35);
-        color: var(--danger);
-      }
-
-      .alert.success {
-        background: rgba(52,211,153,0.12);
-        border: 1px solid rgba(52,211,153,0.35);
-        color: var(--green);
-      }
-
-      /* ── Footer badge ── */
-      .footer-badge {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11.5px;
-        color: var(--text-lo);
-        animation: fadeUp 0.7s ease both 0.25s;
-      }
-
-      .footer-badge span {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--border);
-        padding: 4px 10px;
-        border-radius: 20px;
-      }
-
-      /* ── Animations ── */
-      @keyframes fadeDown {
-        from { opacity: 0; transform: translateY(-18px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(18px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-
-      /* ── Shake on error ── */
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20%       { transform: translateX(-7px); }
-        40%       { transform: translateX(7px); }
-        60%       { transform: translateX(-5px); }
-        80%       { transform: translateX(5px); }
-      }
-
-      .shake { animation: shake 0.4s ease; }
-
-      /* ── Divider ── */
-      .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 24px 0 20px;
-      }
-
-      .security-note {
-        font-size: 11.5px;
-        color: var(--text-lo);
+      .footer-note {
         text-align: center;
-        line-height: 1.6;
-      }
-
-      .security-note strong {
-        color: #64748b;
-        font-weight: 500;
+        font-size: 11.5px;
+        color: #999;
+        margin-top: 20px;
       }
     </style>
   </head>
   <body>
-    <div class="page">
 
-      <!-- Brand header -->
-      <div class="brand">
-        <div class="brand-icon">📋</div>
+    <div class="login-box">
+      <div class="header">
         <h1>ZPHS Kistapur</h1>
-        <p>Bonafide Certificate Generator — Secure Portal</p>
+        <p>Bonafide Certificate Generator — Staff Login</p>
       </div>
 
-      <!-- Login card -->
-      <div class="card" id="loginCard">
-        <div class="card-title">Staff Login</div>
-        <div class="card-sub">Enter your office credentials to continue.</div>
+      <div class="error-msg" id="errorMsg"></div>
 
-        <!-- Error / success alerts -->
-        <div class="alert error" id="alertBox">
-          <span>⚠️</span>
-          <span id="alertMsg">Invalid username or password.</span>
+      <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="off">
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Enter username"
+            autocomplete="username"
+            required
+            spellcheck="false"
+          />
         </div>
 
-        <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="off">
-          <!-- Username -->
-          <div class="field">
-            <label for="username">Username</label>
-            <div class="input-wrap">
-              <span class="icon">👤</span>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Office username"
-                autocomplete="username"
-                required
-                spellcheck="false"
-              />
-            </div>
-          </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
 
-          <!-- Password -->
-          <div class="field">
-            <label for="password">Password</label>
-            <div class="input-wrap">
-              <span class="icon">🔒</span>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="••••••••••••"
-                autocomplete="current-password"
-                required
-              />
-              <button type="button" class="eye-btn" id="eyeBtn" onclick="togglePassword()" title="Show/hide password">👁</button>
-            </div>
-          </div>
+        <button type="submit" class="btn-login" id="loginBtn">Sign In</button>
+      </form>
 
-          <button type="submit" class="btn-login" id="loginBtn">
-            <span class="btn-text">Sign In →</span>
-            <div class="spinner"></div>
-          </button>
-        </form>
-
-        <div class="divider"></div>
-        <p class="security-note">
-          🔐 <strong>Secured access only.</strong> Credentials are verified server-side.<br>
-          Session expires when you close the browser.
-        </p>
+      <div class="footer-note">
+        Mndl. Jannaram, Dist. Mancherial (T.S)
       </div>
-
-      <!-- Footer -->
-      <div class="footer-badge">
-        <span>🏫 Zilla Parishad High School, Kistapur</span>
-        <span>Mndl. Jannaram, Mancherial</span>
-      </div>
-
     </div>
 
     <script>
-      // If already logged in, redirect straight to app
+      // If already logged in, go straight to app
       (function () {
         try {
           if (sessionStorage.getItem('__zphs_auth')) {
@@ -438,42 +166,16 @@
         } catch (e) {}
       })();
 
-      function togglePassword() {
-        const inp = document.getElementById('password');
-        const btn = document.getElementById('eyeBtn');
-        if (inp.type === 'password') {
-          inp.type = 'text';
-          btn.textContent = '🙈';
-        } else {
-          inp.type = 'password';
-          btn.textContent = '👁';
-        }
-      }
-
-      function showAlert(msg) {
-        const box = document.getElementById('alertBox');
-        const txt = document.getElementById('alertMsg');
-        txt.textContent = msg;
-        box.className = 'alert error show';
-        // Shake the card
-        const card = document.getElementById('loginCard');
-        card.classList.remove('shake');
-        void card.offsetWidth; // reflow to restart animation
-        card.classList.add('shake');
-      }
-
       async function handleLogin(e) {
         e.preventDefault();
-        const btn  = document.getElementById('loginBtn');
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value;
+        const errEl = document.getElementById('errorMsg');
+        const btn   = document.getElementById('loginBtn');
+        const user  = document.getElementById('username').value.trim();
+        const pass  = document.getElementById('password').value;
 
-        // Clear previous alert
-        document.getElementById('alertBox').className = 'alert error';
-
-        // Show loading
-        btn.classList.add('loading');
+        errEl.className = 'error-msg';
         btn.disabled = true;
+        btn.textContent = 'Signing in...';
 
         try {
           const res = await fetch('/api/login', {
@@ -485,18 +187,18 @@
           const data = await res.json();
 
           if (res.ok && data.success && data.token) {
-            // Store token in sessionStorage (cleared on tab/browser close)
             sessionStorage.setItem('__zphs_auth', data.token);
-            // Redirect to the protected app
             window.location.replace('/app.html');
           } else {
-            showAlert(data.error || 'Invalid username or password.');
+            errEl.textContent = data.error || 'Invalid username or password.';
+            errEl.className = 'error-msg show';
           }
         } catch (err) {
-          showAlert('Network error. Please try again.');
+          errEl.textContent = 'Could not connect to server. Please try again.';
+          errEl.className = 'error-msg show';
         } finally {
-          btn.classList.remove('loading');
           btn.disabled = false;
+          btn.textContent = 'Sign In';
         }
       }
     </script>
